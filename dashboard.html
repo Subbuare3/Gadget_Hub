@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Dashboard</h2>
+
+<canvas id="stockChart" width="400" height="200"></canvas>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+const ctx = document.getElementById('stockChart');
+
+new Chart(ctx, {
+    type: 'bar',
+    data: {
+        labels: {{ product_names | safe }},
+        datasets: [{
+            label: 'Product Stock Levels',
+            data: {{ product_stock | safe }},
+        }]
+    }
+});
+</script>
+{% endblock %}
