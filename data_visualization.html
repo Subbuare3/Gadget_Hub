@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Gadget Hub — Data Visualization</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; background: #f4f6fb; color: #222; }
+    .container { max-width: 1000px; margin: auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 6px 20px rgba(20,30,50,0.08); }
+    h1 { margin-top: 0; }
+    .controls { display:flex; gap:10px; align-items:center; margin-bottom: 15px; }
+    select, button { padding:8px 12px; border-radius:6px; border:1px solid #d0d7e6; background:white; }
+    canvas { background: #fff; border-radius:8px; padding:10px; }
+    .note { font-size: 0.9rem; color:#666; margin-top:12px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Gadget Hub — Inventory Visualization</h1>
+    <p class="note">Interactive visualization of product stock & sales metrics. Toggle datasets and chart types below.</p>
+
+    <div class="controls">
+      <label for="chartType">Chart type:</label>
+      <select id="chartType">
+        <option value="bar">Bar</option>
+        <option value="line">Line</option>
+        <option value="pie">Pie</option>
+      </select>
+
+      <label for="dataset">Dataset:</label>
+      <select id="dataset">
+        <option value="stock">Stock Levels</option>
+        <option value="sales">Monthly Sales</option>
+        <option value="category">Category Distribution</option>
+      </select>
+
+      <button id="refresh">Refresh</button>
+    </div>
+
+    <canvas id="mainChart" width="900" height="380"></canvas>
+
+    <p class="note">This file is standalone and uses embedded sample data. To use your real data, replace the <code>data</code> object in the script with your data or fetch from an API endpoint.</p>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script>
+    // ---------- SAMPLE DATA (replace with real data or fetch from server) ----------
+    const dataStore = {
+      stock: {
+        labels: ["Bluetooth Speaker", "Wireless Headphones", "Smartwatch", "Drone", "Gaming Mouse", "4K Monitor", "Portable Charger"],
+        values: [120, 75, 42, 18, 200, 35, 150]
+      },
+      sales: {
+        labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+        values: [320, 280, 350, 410, 500, 470, 520, 610, 580, 640, 700, 760]
+      },
+      category: {
+        labels: ["Audio", "Wearables", "Cameras", "Gaming", "Monitors"],
+        values: [240, 120, 60, 300, 80]
+      }
+    };
+
+    // ---------- Chart setup ----------
+    const ctx = document.getElementById('mainChart').getContext('2d');
+    let chart = null;
+
+    function createChart(type, datasetKey) {
+      const ds = dataStore[datasetKey];
+      const cfg = {
+        type: type,
+        data: {
+          labels: ds.labels,
+          datasets: [{
+            label: datasetKey === 'stock' ? 'Stock quantity' : (datasetKey === 'sales' ? 'Units sold' : 'Count'),
+            data: ds.values,
+            fill: false,
+            tension: 0.2,
+            borderWidth: 1
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: { display: type !== 'bar' || true },
+            tooltip: { mode: 'index', intersect: false }
+          },
+          scales: (type === 'pie') ? {} : {
+            x: { display: true },
+            y: { display: true, beginAtZero: true }
+          }
+        }
+      };
+
+      if (chart) chart.destroy();
+      chart = new Chart(ctx, cfg);
+    }
+
+    // Initial render
+    createChart('bar', 'stock');
+
+    // ---------- Controls ----------
+    document.getElementById('refresh').addEventListener('click', () => {
+      const type = document.getElementById('chartType').value;
+      const ds = document.getElementById('dataset').value;
+      createChart(type, ds);
+    });
+
+    // Allow changing when selects change
+    document.getElementById('chartType').addEventListener('change', () => {
+      const type = document.getElementById('chartType').value;
+      const ds = document.getElementById('dataset').value;
+      createChart(type, ds);
+    });
+    document.getElementById('dataset').addEventListener('change', () => {
+      const type = document.getElementById('chartType').value;
+      const ds = document.getElementById('dataset').value;
+      createChart(type, ds);
+    });
+
+    // Example: how to load external JSON data (uncomment & adapt)
+    /*
+    fetch('/api/products/stats')
+      .then(r => r.json())
+      .then(json => {
+         dataStore.stock.labels = json.names;
+         dataStore.stock.values = json.stock;
+         createChart(document.getElementById('chartType').value, document.getElementById('dataset').value);
+      });
+    */
+  </script>
+</body>
+</html>
