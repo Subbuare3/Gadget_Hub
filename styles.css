@@ -1,0 +1,9 @@
+body { font-family: Arial; margin: 0; background: #f7f7f7; }
+.container { width: 80%; margin: auto; padding: 20px; }
+nav { background: #222; padding: 10px; }
+nav a { color: white; margin-right: 15px; text-decoration: none; }
+table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+table, th, td { border: 1px solid #ccc; }
+th, td { padding: 10px; text-align: left; }
+.btn { background: green; padding: 8px 15px; color: white; text-decoration: none; }
+.error { color: red; }
