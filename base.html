@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Gadget Hub</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+
+<nav>
+    <a href="/dashboard">Dashboard</a>
+    <a href="/products">Products</a>
+    {% if session.get("user_id") %}
+        <a href="/logout">Logout</a>
+    {% endif %}
+</nav>
+
+<div class="container">
+    {% block content %}{% endblock %}
+</div>
+
+</body>
+</html>
